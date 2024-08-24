@@ -1,7 +1,7 @@
 import logging
+import threading
 import time
 from pathlib import Path
-from threading import Thread
 
 from config import settings
 from resize_image import resize
@@ -109,13 +109,8 @@ def start_observer(handler):
     observer.join()
 
 
-image_handler = FileHandler()
-observer_thread = Thread(target=start_observer, args=(image_handler,))
-observer_thread.daemon = True
-observer_thread.start()
-
-
 if __name__ == "__main__":
-    while True:
-        print(image_handler.get_status())
-        time.sleep(5)
+    image_handler = FileHandler()
+    observer_thread = threading.Thread(target=start_observer, args=(image_handler,))
+    observer_thread.daemon = True
+    observer_thread.start()
