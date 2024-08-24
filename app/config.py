@@ -3,14 +3,20 @@ from pathlib import Path
 
 from dynaconf import Dynaconf
 
+config_path = Path(__file__).parents[1] / "config.yaml"
+
 settings = Dynaconf(
-    settings_files=["./config.yaml"],
+    settings_files=[config_path],
     environments=True,
 )
 
 # Convert the path strings to Path objects
 settings.watch_directory = Path(settings.watch_directory)
 settings.resized_directory = Path(settings.resized_directory)
+
+# Check if the watch directory exists
+if not settings.watch_directory.exists():
+    raise FileNotFoundError(f"Watch directory not found: {settings.watch_directory}")
 
 # Create the directories if they don't exist
 settings.resized_directory.mkdir(parents=True, exist_ok=True)
