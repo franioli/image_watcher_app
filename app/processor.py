@@ -50,7 +50,7 @@ class FileHandler(FileSystemEventHandler):
 
     def on_deleted(self, event):
         if not event.is_directory and settings.remove_on_delete:
-            self.delete_resized_image(event.src_path)
+            self.delete_file(event.src_path)
 
     def process_image(self, file_path):
         file_path = Path(file_path)
@@ -68,19 +68,18 @@ class FileHandler(FileSystemEventHandler):
                 logger.error(f"Failed to process image {file_path}: {e}")
                 self.failed_images += 1
 
-    def delete_resized_image(self, file_path):
+    def delete_file(self, file_path):
         file_path = Path(file_path)
-        resized_file_path = self.image_map.pop(str(file_path), None)
-        print(resized_file_path)
-        if resized_file_path:
-            resized_path = Path(resized_file_path)
+        file_to_remove = self.image_map.pop(str(file_path), None)
+        if file_to_remove:
+            resized_path = Path(file_to_remove)
             if resized_path.exists():
                 try:
                     resized_path.unlink()  # Delete the resized image
-                    logger.info(f"Deleted resized image: {resized_file_path}")
+                    logger.info(f"Deleted resized image: {file_to_remove}")
                 except Exception as e:
                     logger.error(
-                        f"Failed to delete resized image {resized_file_path}: {e}"
+                        f"Failed to delete resized image {file_to_remove}: {e}"
                     )
 
     def get_status(self):
