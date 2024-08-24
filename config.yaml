@@ -1,0 +1,14 @@
+default:
+  watch_directory: "/data/p1"
+  resized_directory: "/data/p1_web"
+  w_max: 1200
+  log_file: "/data/image_resizer.log" # relative to the app root
+  image_extensions: [".png", ".jpg", ".jpeg", ".bmp", ".gif"]
+  remove_on_delete: true
+  process_on_start: true
+
+development:
+  debug: true
+
+production:
+  debug: false

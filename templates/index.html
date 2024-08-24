@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .images {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .image-container {
+            margin: 10px;
+        }
+
+        .image-container img {
+            max-width: 200px; /* Set max width */
+            max-height: 200px; /* Set max height */
+            width: auto;
+            height: auto;
+            border: 1px solid #ccc;
+            padding: 2px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .status {
+            margin-top: 20px;
+        }
+
+        .status p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">        
+        <h1>Image Resizer Dashboard</h1>
+
+        <h2>Process Status</h2>
+        <div class="status" id="status">
+            <p>Loading status...</p>
+        </div>
+
+        <h2>Processed Images</h2>
+        <div class="images" id="images-container">
+            <!-- Images will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <script>
+        function updateStatus() {
+            fetch('/process-status')
+                .then(response => response.json())
+                .then(data => {
+                    const statusDiv = document.getElementById('status');
+                    statusDiv.innerHTML = `
+                        <p><strong>Status:</strong> ${data.status}</p>
+                        <p><strong>Watch Directory:</strong> ${data.watch_directory}</p>
+                        <p><strong>Resized Directory:</strong> ${data.resized_directory}</p>
+                        <p><strong>Resize Resolution:</strong> ${data.resize_resolution}</p>
+                        <p><strong>Total Images:</strong> ${data.total_images}</p>
+                        <p><strong>Processed Images:</strong> ${data.processed_images}</p>
+                        <p><strong>Failed Images:</strong> ${data.failed_images}</p>
+                    `;
+                });
+        }
+
+        function updateImages() {
+            fetch('/image-list')
+                .then(response => response.json())
+                .then(data => {
+                    const imagesContainer = document.getElementById('images-container');
+                    imagesContainer.innerHTML = data.image_urls.map(url => `
+                        <div class="image-container">
+                            <img src="${url}" alt="Image">
+                        </div>
+                    `).join('');
+                });
+        }
+
+        // Initial load
+        updateStatus();
+        updateImages();
+
+        // Auto-reload every 2 seconds
+        setInterval(() => {
+            updateStatus();
+            updateImages();
+        }, 2000);
+    </script>
+</body>
+
+</html>
