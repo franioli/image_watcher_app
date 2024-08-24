@@ -43,7 +43,7 @@ async def get_image(image_name: str):
 
 @app.get("/image-list")
 async def get_image_list():
-    images = [f for f in settings.resized_directory.iterdir() if f.is_file()]
+    images = sorted([f for f in settings.resized_directory.iterdir() if f.is_file()])
     image_urls = [f"/images/{image.name}" for image in images]
     return {"image_urls": image_urls}
 

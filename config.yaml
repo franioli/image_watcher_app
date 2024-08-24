@@ -4,8 +4,9 @@ default:
   w_max: 1200
   log_file: "/data/image_resizer.log" # relative to the app root
   image_extensions: [".png", ".jpg", ".jpeg", ".bmp", ".gif"]
-  remove_on_delete: true
-  process_on_start: true
+  remove_on_delete: true # remove the resized image when the original is deleted
+  process_on_start: true # process all images in the watch directory on start
+  skip_existing: true # skip images that already have a resized version
 
 development:
   debug: true

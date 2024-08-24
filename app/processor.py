@@ -29,6 +29,10 @@ class FileHandler(FileSystemEventHandler):
     def process_existing_images(self):
         logger.info("Processing existing images...")
         for file_path in settings.watch_directory.glob("*.*"):
+            if settings.skip_existing:
+                if str(file_path) in self.image_map:
+                    logger.info(f"Skipping existing image: {file_path}")
+                    continue
             self.process_image(file_path)
 
     def on_created(self, event):
