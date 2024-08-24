@@ -90,7 +90,7 @@
                     const imagesContainer = document.getElementById('images-container');
                     imagesContainer.innerHTML = data.image_urls.map(url => `
                         <div class="image-container">
-                            <img src="${url}" alt="Image">
+                            <img src="${url}" alt="${url}">
                         </div>
                     `).join('');
                 });

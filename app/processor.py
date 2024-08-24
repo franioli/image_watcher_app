@@ -20,7 +20,9 @@ class FileHandler(FileSystemEventHandler):
         # Initialize the image map to store the original and resized image paths
         self.image_map = {
             str(file_path): str(settings.resized_directory / file_path.name)
-            for file_path in settings.watch_directory.glob("*.*")
+            if (settings.resized_directory / file_path.name).exists()
+            else None
+            for file_path in sorted(settings.watch_directory.glob("*.*"), reverse=True)
         }
 
         if settings.remove_on_delete:
@@ -30,8 +32,7 @@ class FileHandler(FileSystemEventHandler):
         logger.info("Processing existing images...")
         for file_path in settings.watch_directory.glob("*.*"):
             if settings.skip_existing:
-                if str(file_path) in self.image_map:
-                    logger.info(f"Skipping existing image: {file_path}")
+                if self.image_map[str(file_path)]:
                     continue
             self.process_image(file_path)
 
@@ -107,6 +108,13 @@ def start_observer(handler):
         observer.stop()
 
     observer.join()
+
+
+# Start the observer thread
+image_handler = FileHandler()
+observer_thread = threading.Thread(target=start_observer, args=(image_handler,))
+observer_thread.daemon = True
+observer_thread.start()
 
 
 if __name__ == "__main__":

@@ -8,14 +8,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from processor import FileHandler, start_observer
+from processor import image_handler
 
 logger = logging.getLogger()
 
 # FastAPI app setup
 app = FastAPI()
 
-# Serve the resized images and logs as static files
+# Serve the resized images as static files
 app.mount(
     "/resized-images",
     StaticFiles(directory=str(settings.resized_directory)),
@@ -46,7 +46,7 @@ async def get_image_list():
     images = sorted([f for f in settings.resized_directory.iterdir() if f.is_file()])
 
     # If the setting is enabled, only display the last N images
-    if settings.dashboard.display_last_n_images:
+    if settings.dashboard.display_last_n_images > 0:
         images = images[-settings.dashboard.display_last_n_images :]
 
     # Reverse the list so the newest images are first
@@ -59,6 +59,7 @@ async def get_image_list():
 @app.get("/process-status")
 def process_status():
     status_info = image_handler.get_status()
+    print(status_info)
     # Include configuration details
     status_info.update(
         {
@@ -82,18 +83,14 @@ if __name__ == "__main__":
 
     # Start Uvicorn server
     server_thread = threading.Thread(
-        target=lambda: uvicorn.run(app, host="0.0.0.0", port=settings.dashboard.port)
+        target=lambda: uvicorn.run(
+            app, host=settings.dashboard.host, port=settings.dashboard.port
+        )
     )
     server_thread.start()
 
     # Wait a moment to ensure the server is up before starting processing
     time.sleep(2)
-
-    # Start the observer thread
-    image_handler = FileHandler()
-    observer_thread = threading.Thread(target=start_observer, args=(image_handler,))
-    observer_thread.daemon = True
-    observer_thread.start()
 
     # Process existing images
     if settings.process_on_start:
