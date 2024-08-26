@@ -2,110 +2,160 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Resizer Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Resizer Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
 
-        h1 {
-            text-align: center;
-        }
+    h1 {
+      text-align: center;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
-        }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
 
-        .images {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
+    .images {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
 
-        .image-container {
-            margin: 10px;
-        }
+    .image-container {
+      margin: 10px;
+    }
 
-        .image-container img {
-            max-width: 200px; /* Set max width */
-            max-height: 200px; /* Set max height */
-            width: auto;
-            height: auto;
-            border: 1px solid #ccc;
-            padding: 2px;
-            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-        }
+    .image-container img {
+      max-width: 200px;
+      max-height: 200px;
+      width: auto;
+      height: auto;
+      border: 1px solid #ccc;
+      padding: 2px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
-        .status {
-            margin-top: 20px;
-        }
+    .status {
+      margin-top: 20px;
+    }
 
-        .status p {
-            margin: 5px 0;
-        }
-    </style>
+    .status p {
+      margin: 5px 0;
+    }
+
+    .directory-section {
+      margin-bottom: 40px;
+    }
+
+    .directory-section h2 {
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 5px;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container">        
-        <h1>Image Resizer Dashboard</h1>
+  <div class="container">
+    <h1>Image Resizer Dashboard</h1>
 
-        <h2>Process Status</h2>
-        <div class="status" id="status">
-            <p>Loading status...</p>
-        </div>
-
-        <h2>Processed Images</h2>
-        <div class="images" id="images-container">
-            <!-- Images will be dynamically loaded here -->
-        </div>
+    <div id="directories-container">
+      <!-- Directory sections will be dynamically loaded here -->
     </div>
+  </div>
 
-    <script>
-        function updateStatus() {
-            fetch('/process-status')
-                .then(response => response.json())
-                .then(data => {
-                    const statusDiv = document.getElementById('status');
-                    statusDiv.innerHTML = `
-                        <p><strong>Status:</strong> ${data.status}</p>
-                        <p><strong>Watch Directory:</strong> ${data.watch_directory}</p>
-                        <p><strong>Resized Directory:</strong> ${data.resized_directory}</p>
-                        <p><strong>Resize Resolution:</strong> ${data.resize_resolution}</p>
-                        <p><strong>Total Images:</strong> ${data.total_images}</p>
-                        <p><strong>Processed Images:</strong> ${data.processed_images}</p>
-                        <p><strong>Failed Images:</strong> ${data.failed_images}</p>
-                    `;
-                });
-        }
+  <script>
+    function updateStatus(dirId) {
+      fetch(`/process-status/${dirId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          const statusDiv = document.getElementById(`status-${dirId}`);
+          statusDiv.innerHTML = `
+              <p><strong>Status:</strong> ${data.status || "N/A"}</p>
+              <p><strong>Watch Directory:</strong> ${data.watch_directory || "N/A"}</p>
+              <p><strong>Resized Directory:</strong> ${data.output_directory || "N/A"}</p>
+              <p><strong>Resize Resolution:</strong> ${data.resize_resolution || "N/A"}</p>
+              <p><strong>Total Images:</strong> ${data.total_images || 0}</p>
+              <p><strong>Processed Images:</strong> ${data.processed_images || 0}</p>
+              <p><strong>Failed Images:</strong> ${data.failed_images || 0}</p>
+            `;
+        })
+        .catch((error) => {
+          console.error(`Error fetching status for directory ${dirId}:`, error);
+        });
+    }
 
-        function updateImages() {
-            fetch('/image-list')
-                .then(response => response.json())
-                .then(data => {
-                    const imagesContainer = document.getElementById('images-container');
-                    imagesContainer.innerHTML = data.image_urls.map(url => `
-                        <div class="image-container">
-                            <img src="${url}" alt="${url}">
-                        </div>
-                    `).join('');
-                });
-        }
+    function updateImages(dirId) {
+      fetch(`/image-list/${dirId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          const imagesContainer = document.getElementById(`images-container-${dirId}`);
+          imagesContainer.innerHTML = data.image_urls
+            .map(
+              (url) => `
+                  <div class="image-container">
+                    <img src="${url}" alt="${url}">
+                  </div>
+                `
+            )
+            .join("");
+        })
+        .catch((error) => {
+          console.error(`Error fetching images for directory ${dirId}:`, error);
+        });
+    }
 
-        // Initial load
-        updateStatus();
-        updateImages();
+    function createDirectorySection(dirId) {
+      const container = document.getElementById("directories-container");
+      const section = document.createElement("div");
+      section.className = "directory-section";
+      section.innerHTML = `
+          <h2>Directory ${dirId}</h2>
+          <div class="status" id="status-${dirId}">
+            <p>Loading status...</p>
+          </div>
+          <h3>Processed Images</h3>
+          <div class="images" id="images-container-${dirId}">
+            <!-- Images will be dynamically loaded here -->
+          </div>
+        `;
+      container.appendChild(section);
+    }
 
-        // Auto-reload every 2 seconds
-        setInterval(() => {
-            updateStatus();
-            updateImages();
-        }, 2000);
-    </script>
+    function initDashboard() {
+      // Assuming the number of directories is provided by the server
+      fetch("/directory-count")
+        .then((response) => response.json())
+        .then((data) => {
+          const directoryCount = data.directory_count;
+
+          // Create sections for each directory
+          for (let i = 0; i < directoryCount; i++) {
+            createDirectorySection(i);
+            updateStatus(i);
+            updateImages(i);
+          }
+
+          // Auto-reload every 2 seconds
+          setInterval(() => {
+            for (let i = 0; i < directoryCount; i++) {
+              updateStatus(i);
+              updateImages(i);
+            }
+          }, 2000);
+        })
+        .catch((error) => {
+          console.error("Error initializing dashboard:", error);
+        });
+    }
+
+    // Initialize the dashboard
+    initDashboard();
+  </script>
 </body>
 
 </html>
