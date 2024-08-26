@@ -1,37 +1,44 @@
 import logging
 from pathlib import Path
 
-from dynaconf import Dynaconf
+from omegaconf import OmegaConf
 
 config_path = Path(__file__).parents[1] / "config.yaml"
 
-settings = Dynaconf(
-    settings_files=[config_path],
-    environments=True,
-)
+settings = OmegaConf.load(config_path)
 
-# Convert the path strings to Path objects
-settings.watch_directory = Path(settings.watch_directory)
-settings.resized_directory = Path(settings.resized_directory)
 
-# Check if the watch directory exists
-if not settings.watch_directory.exists():
-    raise FileNotFoundError(f"Watch directory not found: {settings.watch_directory}")
+# Check paths
+for dir in settings.watch_directories:
+    # Convert path strings to Path objects
+    dir.watch = Path(dir.watch)
+    dir.output = Path(dir.output)
 
-# Create the directories if they don't exist
-settings.resized_directory.mkdir(parents=True, exist_ok=True)
+    # Check if all watch directories exist
+    if not dir.watch.exists():
+        raise FileNotFoundError(f"Watch directory not found: {dir.watch}")
+
+    # Handle output pattern
+    if "output_pattern" in dir:
+        output_directory = Path(
+            dir.output_pattern.replace("{watch_dir}", str(dir.watch))
+        )
+
+    # Create the directories if they don't exist
+    dir.output.mkdir(parents=True, exist_ok=True)
 
 # Setup logging
+log_level = logging.getLevelName(settings.log.level.upper())
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(log_level)
 
 # Create a file handler
-file_handler = logging.FileHandler(settings.log_file)
-file_handler.setLevel(logging.INFO)
+file_handler = logging.FileHandler(settings.log.file)
+file_handler.setLevel(log_level)
 
 # Create a console handler
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
+console_handler.setLevel(log_level)
 
 # Define the logging format
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
@@ -44,8 +51,10 @@ logger.addHandler(console_handler)
 
 if __name__ == "__main__":
     print(settings)
-    print(settings.watch_directory)
-    print(settings.resized_directory)
-    print(settings.log_file)
-    print(settings.image_extensions)
-    print(settings.w_max)
+    print(settings.watch_directories)
+    print(settings.watch_directories[0].watch)
+    print(settings.watch_directories[0].output)
+    print(settings.proc.image_extensions)
+    print(settings.proc.remove_on_delete)
+    print(settings.proc.skip_existing)
+    print(settings.log.file)

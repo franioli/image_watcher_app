@@ -1,19 +1,23 @@
-default:
-  watch_directory: "/data/p1"
-  resized_directory: "/data/p1_web"
-  log_file: "/data/image_resizer.log" # relative to the app root
+watch_directories:
+  - watch: "./data/p1"
+    output: "./data/p1_web"
+  - watch: "./data/p2"
+    output: "./data/p2_web"
+    # output_pattern: "{watch_dir}_out"  # Pattern-based output directory
+
+proc:
   w_max: 1200
   image_extensions: [".png", ".jpg", ".jpeg", ".bmp", ".gif"]
+  recursive: false # process images in subdirectories
   remove_on_delete: true # remove the resized image when the original is deleted
   process_on_start: true # process all images in the watch directory on start
   skip_existing: true # skip images that already have a resized version
-  dashboard:
-    port: 8000
-    host: "0.0.0.0"
-    display_last_n_images: 30 # number of images to display on the dashboard (-1 for all)
 
-development:
-  debug: true
+dashboard:
+  port: 8000
+  host: "0.0.0.0"
+  display_last_n_images: 30 # number of images to display on the dashboard (-1 for all)
 
-production:
-  debug: false
+log:
+  level: "INFO"
+  file: "./data/log.txt"
