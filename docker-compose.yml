@@ -1,8 +1,8 @@
 services:
   app:
     build: .
-    container_name: belvApp
+    container_name: ImageWatcher
     ports:
-      - "9500:8000"
+      - "9500:9500"
     volumes:
       - /mnt/labmgf/Belvedere/belvedereStereo/img/:/data
