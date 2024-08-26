@@ -2,7 +2,7 @@
 
 This is a simple app that continuously observe one or multiple direcotries and run some operations as soon as an image is added to the directory.
 
-Currentely, the app can only resize the image to a fixed size and save it to a different directory. Other actions will be added (e.g., upload to a cloud storage include other image processing operations).
+Currentely, the app can only resize the image to a fixed size and save it to a different directory. Other actions will be added (e.g., upload to a cloud storage, include other image processing operations).
 
 A simple frontend built with Fast API is also provided to show the status of all the observers and the images that have been processed.
 
