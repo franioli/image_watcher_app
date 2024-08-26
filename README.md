@@ -30,7 +30,7 @@ The app is dockerized and can be run in a small container in order to be constan
    or
 
    ```bash
-   conda create -n image_watcher_app python=3.8
+   conda create -n image_watcher_app python=3.12
    conda activate image_watcher_app
    ```
 
@@ -43,11 +43,10 @@ The app is dockerized and can be run in a small container in order to be constan
    For using the app, set the configuration in the `config.yaml` file.
    The `config.yaml` file is already set with the default values, but you can change it as you want.
 
-   **Note**: The `config.yaml` file must be in the root directory of the app.
+   **Note**: The `config.yaml` file must be in the root directory of the cloned repo.
 
    **Note2**: If you are running the app locally, set the path to the directories you want to observe as for your local machine.
 
-   If you are running the app with docker, the path must start with '/data/', as this is where the directories are mounted in the container.
    Then, run the app and add the directories you want to observe with the following command:
 
    ```bash
@@ -60,10 +59,9 @@ The app is dockerized and can be run in a small container in order to be constan
 
    Set the configuration in the `config.yaml` file as you want.
 
-   **Note**: the path must start with '/data/', as this is where the directories are mounted in the container.
+   **Note**: the path must start with '/data/', as this is where the directories are mounted in the container. 
 
-   Set the path to volume to be mounted as '/data/' in the container `docker-compose.yml` file.
-   This is the path where the directories to be observed will be mounted in the container.
+   Set the path to volume to be mounted as '/data/' in the container `docker-compose.yml` file (this is the path with the directories to be observed).
 
    Run the following command to build the docker image with docker compose and start the app:
 
@@ -71,6 +69,4 @@ The app is dockerized and can be run in a small container in order to be constan
    docker compose up
    ```
 
-   The app will be available at `http://localhost:9500` (Port 9500 is used to avoid conflicts with other services, but you can change it in the `config.yaml`, `Dockerfile` and `docker-compose.yml` file. remember to change all the files!).
-
-## Usage
+   The app will be available at `http://localhost:9500` (Port 9500 is used to avoid conflicts with other services, but you can change it in the `config.yaml`, `Dockerfile` and `docker-compose.yml` file. Remember to change all the files!).
