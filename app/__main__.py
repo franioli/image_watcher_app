@@ -21,6 +21,7 @@ templates = Jinja2Templates(directory="templates")
 image_handlers = {}
 observers = {}
 
+
 # Function to start all observers based on the configuration
 def start_all_observers():
     for i, directory_config in enumerate(settings.watch_directories):
@@ -130,4 +131,4 @@ if __name__ == "__main__":
     # Process existing images if configured
     if settings.proc.process_on_start:
         for handler in image_handlers.values():
-            handler
+            handler.process_existing_images()
