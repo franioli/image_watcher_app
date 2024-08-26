@@ -40,7 +40,12 @@ The app is dockerized and can be run in a small container in order to be constan
    pip install -r requirements.txt
    ```
 
-   Start the app with the following command:
+   For using the app, set the configuration in the `config.yaml` file.
+   The `config.yaml` file is already set with the default values, but you can change it as you want.
+   **Note**: The `config.yaml` file must be in the root directory of the app.
+   **Note2**: If you are running the app locally, set the path to the directories you want to observe as for your local machine.
+   If you are running the app with docker, the path must start with '/data/', as this is where the directories are mounted in the container.
+   Then, run the app and add the directories you want to observe with the following command:
 
    ```bash
    python app
@@ -49,6 +54,12 @@ The app is dockerized and can be run in a small container in order to be constan
    The app will be available at `http://localhost:9500`.
 
 2. Install with Docker
+
+   Set the configuration in the `config.yaml` file as you want.
+   **Note**: the path must start with '/data/', as this is where the directories are mounted in the container.
+
+   Set the path to volume to be mounted as '/data/' in the container `docker-compose.yml` file.
+   This is the path where the directories to be observed will be mounted in the container.
 
    Run the following command to build the docker image with docker compose and start the app:
 
@@ -59,6 +70,3 @@ The app is dockerized and can be run in a small container in order to be constan
    The app will be available at `http://localhost:9500` (Port 9500 is used to avoid conflicts with other services, but you can change it in the `config.yaml`, `Dockerfile` and `docker-compose.yml` file. remember to change all the files!).
 
 ## Usage
-
-For using the app, remember to set the configuration in the `config.yaml` file.
-Then, run the app and add the directories you want to observe.
