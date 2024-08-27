@@ -47,7 +47,7 @@ The app is dockerized and can be run in a small container in order to be constan
 
    **Note2**: If you are running the app locally, set the path to the directories you want to observe as for your local machine.
 
-   Then, run the app and add the directories you want to observe with the following command:
+   Then, run the app with:
 
    ```bash
    python app
