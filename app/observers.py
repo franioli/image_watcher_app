@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 from config import settings
-from resize_image import resize
+from process_image import process_image
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -105,7 +105,28 @@ class FileHandler(FileSystemEventHandler):
         file_path = Path(file_path)
         if file_path.suffix.lower() in self.image_extensions:
             try:
-                resized_file_path = resize(file_path, self.output_directory, w_max)
+                # TODO: Temporary - hard coded solution!!
+                # logo_path: str = "logo_polimi.jpg"
+
+                if self.opt.get("logo_path", None):
+                    logo_path = Path(self.opt["logo_path"])
+                    if not logo_path.exists():
+                        logger.error(f"Logo file not found: {logo_path}")
+                        self.opt["logo_path"] = None
+                    self.opt["logo_path"] = str(self.opt["logo_path"])
+                else:
+                    self.opt["logo_path"] = None
+
+                resized_file_path = process_image(
+                    file_path,
+                    self.output_directory,
+                    w_max=1200,
+                    logo_path=self.opt["logo_path"],
+                    font_scale=10,
+                    font_thickness=16,
+                    left_border_percent=0.75,
+                )
+
                 self.image_map[str(file_path)] = str(resized_file_path)
                 self.processed_images += 1
                 logger.info(f"Resized image saved: {resized_file_path}")
@@ -158,7 +179,7 @@ def start_observer(watch_directory: Path, output_directory: Path = None):
     observer = Observer()
     observer.schedule(handler, str(watch_directory), recursive=settings.proc.recursive)
     observer.start()
-    
+
     # Assign the observer thread to the handler
     handler.observer_thread = observer
 
