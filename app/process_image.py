@@ -54,6 +54,20 @@ def resize_image(
 
 
 def read_date_from_exif(im_path: Union[Path, str]) -> datetime:
+    """
+    Reads the date from the EXIF metadata of an image file.
+
+    Args:
+        im_path (Union[Path, str]): The path to the image file.
+
+    Returns:
+        datetime: The datetime object representing the date and time the image was taken.
+        None: If the date is not available in the EXIF metadata.
+
+    Raises:
+        FileNotFoundError: If the image file does not exist.
+        ValueError: If the date format in the EXIF metadata is incorrect.
+    """
     f = open(im_path, "rb")
     tags = exifread.process_file(f, details=False, stop_tag="DateTimeOriginal")
     if "Image DateTime" in tags.keys():
