@@ -1,24 +1,27 @@
+data_path: "/data" # Base path for all data folders
+
 watch_directories:
-  # List of directories to watch for images. Note that if using Docker, the directory path should be the same as the volume path (defualt is /data, so keep all directories under /data)
-  - watch: "/data/p1" # First directory to watch for images
-    output: "/data/p1_web" # Output directory for resized images
-  - watch: "/data/p2" # Second directory to watch for images
-    output: "/data/p2_web"
-    # output_pattern: "{watch_dir}_out"  # Pattern-based output directory
+  # List of directories to watch for images. These paths are built relative to the data_path.
+  - watch: "${data_path}/p1" # First directory to watch for images
+    output: "${data_path}/p1_web" # Output directory for resized images
+  - watch: "${data_path}/p2" # Second directory to watch for images
+    output: "${data_path}/p2_web"
+    # output_pattern: "{watch_dir}_out"  # Pattern-based output directory (optional feature)
 
 proc:
-  w_max: 1200 # max width for the resized image
-  image_extensions: [".png", ".jpg", ".jpeg", ".bmp", ".gif"] # extensions of images to process
-  recursive: false # process images in subdirectories
-  remove_on_delete: true # remove the resized image when the original is deleted
-  process_on_start: true # process all images in the watch directory on start
-  skip_existing: true # skip images that already have a resized version
+  w_max: 1200 # Max width for the resized image
+  image_extensions: [".png", ".jpg", ".jpeg", ".bmp", ".gif"] # Extensions of images to process
+  recursive: false # Process images in subdirectories
+  remove_on_delete: true # Remove the resized image when the original is deleted
+  process_on_start: true # Process all images in the watch directory on start
+  skip_existing: true # Skip images that already have a resized version
+  logo_path: "${data_path}/logo_polimi.jpg" # Path to the logo to overlay on the resized image
 
 dashboard:
-  port: 9500 # port for the dashboard
-  host: "0.0.0.0" # host for the dashboard (default is to run it locally, you can access it via http://localhost:9500)
-  display_last_n_images: 30 # number of images to display on the dashboard (-1 for all)
+  port: 9500 # Port for the dashboard
+  host: "0.0.0.0" # Host for the dashboard (default is to run it locally, you can access it via http://localhost:9500)
+  display_last_n_images: 30 # Number of images to display on the dashboard (-1 for all)
 
 log:
   level: "INFO"
-  file: "./data/log.txt"
+  file: "${data_path}/log.txt" # Log file path relative to data_path
