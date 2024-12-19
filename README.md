@@ -1,5 +1,8 @@
 # Image Watcher App
 
+
+#TEST 
+
 This is a simple app that continuously observe one or multiple directories and run some operations as soon as an image is added to the directory.
 
 Currently, the app can only resize the image to a fixed size and save it to a different directory. Other actions will be added (e.g., upload to a cloud storage, include other image processing operations).
